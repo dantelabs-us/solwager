@@ -4,7 +4,6 @@ const config = require('config');
 const router = express.Router();
 const { checkAuth } = require("theta-tv-charts");
 
-const auth = require('../../middleware/auth');
 const { check, validationResult } = require('express-validator');
 // bring in normalize to give us a proper url, regardless of what user entered
 const normalize = require('normalize-url');
@@ -13,12 +12,12 @@ const checkObjectId = require('../../middleware/checkObjectId');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 const Post = require('../../models/Post');
-checkAuth();
+const auth = checkAuth();
 
 // @route    GET api/profile/me
 // @desc     Get current users profile
 // @access   Private
-router.get('/me', auth, async (req, res) => {
+router.get('/me', async (req, res) => {
   try {
     const profile = await Profile.findOne({
       user: req.user.id
@@ -40,8 +39,7 @@ router.get('/me', auth, async (req, res) => {
 // @access   Private
 router.post(
   '/',
-  auth,
-  check('status', 'Status is required').notEmpty(),
+    check('status', 'Status is required').notEmpty(),
   check('skills', 'Skills is required').notEmpty(),
   async (req, res) => {
     const errors = validationResult(req);
@@ -139,7 +137,7 @@ router.get(
 // @route    DELETE api/profile
 // @desc     Delete profile, user & posts
 // @access   Private
-router.delete('/', auth, async (req, res) => {
+router.delete('/', async (req, res) => {
   try {
     // Remove user posts
     // Remove profile
@@ -162,8 +160,7 @@ router.delete('/', auth, async (req, res) => {
 // @access   Private
 router.put(
   '/experience',
-  auth,
-  check('title', 'Title is required').notEmpty(),
+    check('title', 'Title is required').notEmpty(),
   check('company', 'Company is required').notEmpty(),
   check('from', 'From date is required and needs to be from the past')
     .notEmpty()
@@ -193,7 +190,7 @@ router.put(
 // @desc     Delete experience from profile
 // @access   Private
 
-router.delete('/experience/:exp_id', auth, async (req, res) => {
+router.delete('/experience/:exp_id', async (req, res) => {
   try {
     const foundProfile = await Profile.findOne({ user: req.user.id });
 
@@ -209,17 +206,12 @@ router.delete('/experience/:exp_id', auth, async (req, res) => {
   }
 });
 
-const passport = (() => {
-  getPassport();
-})();
-
 // @route    PUT api/profile/education
 // @desc     Add profile education
 // @access   Private
 router.put(
   '/education',
-  auth,
-  check('school', 'School is required').notEmpty(),
+    check('school', 'School is required').notEmpty(),
   check('degree', 'Degree is required').notEmpty(),
   check('fieldofstudy', 'Field of study is required').notEmpty(),
   check('from', 'From date is required and needs to be from the past')
@@ -250,7 +242,7 @@ router.put(
 // @desc     Delete education from profile
 // @access   Private
 
-router.delete('/education/:edu_id', auth, async (req, res) => {
+router.delete('/education/:edu_id', async (req, res) => {
   try {
     const foundProfile = await Profile.findOne({ user: req.user.id });
     foundProfile.education = foundProfile.education.filter(

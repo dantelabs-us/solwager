@@ -13,6 +13,7 @@ export default defineConfig(() => ({
   resolve: {
     alias: {
       crypto: 'crypto-browserify',
+      fs: './empty-module.js', // Correct file path for the mock module
     },
   },
   plugins: [
